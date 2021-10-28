@@ -59,11 +59,15 @@ class ViewController: UIViewController {
         activateContainerViewConstraints()
         activateImmutableConstraints()
         activateMutableConstraints()
-        NotificationCenter.default.addObserver(self, selector: #selector(self.activateMutableConstraints), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        activateMutableConstraints()
     }
     
     @objc private func scaleSuperview() {
@@ -85,7 +89,7 @@ class ViewController: UIViewController {
         NSLayoutConstraint.activate(getImmutableConstraints())
     }
     
-    @objc private func activateMutableConstraints(){
+    private func activateMutableConstraints(){
         if UIDevice.current.orientation.isLandscape {
             if(portraitConstraints != nil){
                 NSLayoutConstraint.deactivate(portraitConstraints!)
@@ -100,63 +104,62 @@ class ViewController: UIViewController {
     }
     
     private func getImmutableConstraints() -> [NSLayoutConstraint]{
-        if(immutableConstraints == nil){
+        if let constraints = immutableConstraints{
+            return constraints;
+        } else {
             var constraints = [NSLayoutConstraint]()
-            
             constraints.append(redView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: baseMargin))
             constraints.append(redView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: baseMargin))
-            
             constraints.append(button.heightAnchor.constraint(equalToConstant: 50))
             constraints.append(button.widthAnchor.constraint(equalTo: button.heightAnchor))
-            
             immutableConstraints = constraints
+            return constraints
         }
-        return immutableConstraints!
     }
     
     private func getContainerViewConstraints() -> [NSLayoutConstraint]{
-        if(containerViewConstraints == nil){
+        if let constraints = containerViewConstraints{
+            return constraints;
+        } else {
             var constraints = [NSLayoutConstraint]()
             constraints.append(containerView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: scaleMultiplier))
             constraints.append(containerView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: scaleMultiplier))
             constraints.append(containerView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor))
             constraints.append(containerView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor))
-            
             containerViewConstraints = constraints
+            return constraints
         }
-        return containerViewConstraints!
     }
     
     private func getPortraitConstraints() -> [NSLayoutConstraint]{
-        if(portraitConstraints == nil){
+        if let constraints = portraitConstraints{
+            return constraints;
+        } else {
             var constraints = [NSLayoutConstraint]()
-            
             constraints.append(redView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -baseMargin))
             constraints.append(redView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor))
-            
             constraints.append(blueView.topAnchor.constraint(equalTo: redView.bottomAnchor, constant: baseMargin))
             constraints.append(blueView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -baseMargin))
             constraints.append(blueView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: baseMargin))
             constraints.append(blueView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -baseMargin))
-            
             portraitConstraints = constraints
+            return constraints
         }
-        return portraitConstraints!
     }
     
     private func getLandscapeConstraints() -> [NSLayoutConstraint]{
-        if(landscapeConstraints == nil){
+        if let constraints = landscapeConstraints{
+            return constraints;
+        } else {
             var constraints = [NSLayoutConstraint]()
             constraints.append(redView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor))
             constraints.append(redView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -baseMargin))
-            
             constraints.append(blueView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: baseMargin))
             constraints.append(blueView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -baseMargin))
             constraints.append(blueView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -baseMargin))
             constraints.append(blueView.leadingAnchor.constraint(equalTo: redView.trailingAnchor, constant: baseMargin))
-            
             landscapeConstraints = constraints
+            return constraints
         }
-        return landscapeConstraints!
     }
 }
